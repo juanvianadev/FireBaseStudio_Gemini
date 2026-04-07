@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de IMC</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      color: #ffffff;
+      font-size: 1.8rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.9rem;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      color: #ffffff;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+      -moz-appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+    }
+
+    input[type="number"]:focus {
+      border-color: #e94560;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    input[type="number"]::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #e94560, #c0392b);
+      border: none;
+      border-radius: 10px;
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      letter-spacing: 0.5px;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(233, 69, 96, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+      opacity: 0.9;
+    }
+
+    #resultado {
+      margin-top: 28px;
+      display: none;
+    }
+
+    .imc-valor {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .imc-numero {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1;
+    }
+
+    .imc-label {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+
+    .classificacao {
+      text-align: center;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      margin-bottom: 20px;
+    }
+
+    .tabela {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .tabela-titulo {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 600;
+      padding: 12px 16px 8px;
+    }
+
+    .tabela-linha {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.85rem;
+    }
+
+    .tabela-linha.ativa {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .tabela-linha .faixa {
+      color: rgba(255, 255, 255, 0.75);
+      flex: 1;
+      margin: 0 10px;
+    }
+
+    .tabela-linha .faixa-valor {
+      color: rgba(255, 255, 255, 0.45);
+      font-size: 0.78rem;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .btn-limpar {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 500;
+      box-shadow: none;
+      margin-top: 12px;
+    }
+
+    .btn-limpar:hover {
+      background: rgba(255, 255, 255, 0.14);
+      box-shadow: none;
+      color: #ffffff;
+    }
+
+    .bg-magreza-severa { background: rgba(52,152,219,0.15); color: #5dade2; border: 1px solid rgba(52,152,219,0.25); }
+    .bg-magreza        { background: rgba(93,173,226,0.15); color: #7ec8e3; border: 1px solid rgba(93,173,226,0.25); }
+    .bg-normal         { background: rgba(46,204,113,0.15); color: #58d68d; border: 1px solid rgba(46,204,113,0.25); }
+    .bg-sobrepeso      { background: rgba(243,156,18,0.15); color: #f5b942; border: 1px solid rgba(243,156,18,0.25); }
+    .bg-obesidade-1    { background: rgba(230,126,34,0.15); color: #eb984e; border: 1px solid rgba(230,126,34,0.25); }
+    .bg-obesidade-2    { background: rgba(231,76,60,0.15);  color: #ec7063; border: 1px solid rgba(231,76,60,0.25); }
+    .bg-obesidade-3    { background: rgba(192,57,43,0.15);  color: #e74c3c; border: 1px solid rgba(192,57,43,0.25); }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>Calculadora de IMC</h1>
+    <p class="subtitle">Índice de Massa Corporal</p>
+
+    <div class="form-group">
+      <label for="peso">Peso (kg)</label>
+      <input type="number" id="peso" placeholder="Ex: 70" min="1" max="500" step="0.1" />
+    </div>
+
+    <div class="form-group">
+      <label for="altura">Altura (cm)</label>
+      <input type="number" id="altura" placeholder="Ex: 175" min="50" max="300" step="1" />
+    </div>
+
+    <button onclick="calcularIMC()">Calcular</button>
+
+    <div id="resultado">
+      <div class="imc-valor">
+        <div class="imc-numero" id="imc-numero">--</div>
+        <div class="imc-label">seu IMC</div>
+      </div>
+
+      <div class="classificacao" id="classificacao-texto"></div>
+
+      <div class="tabela">
+        <div class="tabela-titulo">Tabela de classificação</div>
+        <div class="tabela-linha" id="linha-ms">
+          <span class="dot" style="background:#3498db"></span>
+          <span class="faixa">Magreza severa</span>
+          <span class="faixa-valor">IMC &lt; 16</span>
+        </div>
+        <div class="tabela-linha" id="linha-m">
+          <span class="dot" style="background:#5dade2"></span>
+          <span class="faixa">Magreza</span>
+          <span class="faixa-valor">16 – 18,5</span>
+        </div>
+        <div class="tabela-linha" id="linha-n">
+          <span class="dot" style="background:#2ecc71"></span>
+          <span class="faixa">Normal</span>
+          <span class="faixa-valor">18,5 – 24,9</span>
+        </div>
+        <div class="tabela-linha" id="linha-s">
+          <span class="dot" style="background:#f39c12"></span>
+          <span class="faixa">Sobrepeso</span>
+          <span class="faixa-valor">25 – 29,9</span>
+        </div>
+        <div class="tabela-linha" id="linha-o1">
+          <span class="dot" style="background:#e67e22"></span>
+          <span class="faixa">Obesidade grau I</span>
+          <span class="faixa-valor">30 – 34,9</span>
+        </div>
+        <div class="tabela-linha" id="linha-o2">
+          <span class="dot" style="background:#e74c3c"></span>
+          <span class="faixa">Obesidade grau II</span>
+          <span class="faixa-valor">35 – 39,9</span>
+        </div>
+        <div class="tabela-linha" id="linha-o3">
+          <span class="dot" style="background:#c0392b"></span>
+          <span class="faixa">Obesidade grau III</span>
+          <span class="faixa-valor">IMC &ge; 40</span>
+        </div>
+      </div>
+
+      <button class="btn-limpar" onclick="limpar()">Limpar</button>
+    </div>
+  </div>
+
+  <script>
+    function calcularIMC() {
+      // Obtém os valores em formato de texto (string) dos campos de input
+      var pesoInput = document.getElementById('peso').value;
+      var alturaInput = document.getElementById('altura').value;
+
+      // Converte as strings para números decimais de ponto flutuante (float)
+      var peso = parseFloat(pesoInput);
+      var alturaCm = parseFloat(alturaInput);
+
+      // Validação básica: verifica se os campos estão vazios ou contêm valores não numéricos (NaN)
+      if (!pesoInput || !alturaInput || isNaN(peso) || isNaN(alturaCm)) {
+        alert('Por favor, preencha o peso e a altura corretamente.');
+        return;
+      }
+
+      // Validação de intervalo: previne cálculos irreais para o peso
+      if (peso <= 0 || peso > 500) {
+        alert('Peso deve estar entre 1 e 500 kg.');
+        return;
+      }
+
+      // Validação de intervalo: previne cálculos irreais para a altura
+      if (alturaCm <= 50 || alturaCm > 300) {
+        alert('Altura deve estar entre 50 e 300 cm.');
+        return;
+      }
+
+      // MATEMÁTICA DO IMC:
+      // 1. Como a fórmula exige a altura em metros e o input está em centímetros,
+      //    dividimos por 100 para realizar a conversão (ex: 175cm / 100 = 1.75m).
+      var alturaM = alturaCm / 100;
+      
+      // 2. Aplica a fórmula oficial: IMC = Peso / (Altura * Altura)
+      var imc = peso / (alturaM * alturaM);
+      
+      // 3. Arredonda o valor final para apenas 1 casa decimal (ex: 24.89... -> 24.9)
+      var imcFormatado = imc.toFixed(1);
+
+      // Exibe o número formatado na interface
+      document.getElementById('imc-numero').textContent = imcFormatado;
+
+      var texto = '';
+      var cssClass = '';
+      var linhaAtiva = '';
+
+      // Avalia em qual faixa de classificação o IMC calculado se enquadra
+      if (imc < 16) {
+        texto = 'Magreza severa';
+        cssClass = 'bg-magreza-severa';
+        linhaAtiva = 'linha-ms';
+      } else if (imc < 18.5) {
+        texto = 'Magreza';
+        cssClass = 'bg-magreza';
+        linhaAtiva = 'linha-m';
+      } else if (imc < 25) {
+        texto = 'Peso normal';
+        cssClass = 'bg-normal';
+        linhaAtiva = 'linha-n';
+      } else if (imc < 30) {
+        texto = 'Sobrepeso';
+        cssClass = 'bg-sobrepeso';
+        linhaAtiva = 'linha-s';
+      } else if (imc < 35) {
+        texto = 'Obesidade grau I';
+        cssClass = 'bg-obesidade-1';
+        linhaAtiva = 'linha-o1';
+      } else if (imc < 40) {
+        texto = 'Obesidade grau II';
+        cssClass = 'bg-obesidade-2';
+        linhaAtiva = 'linha-o2';
+      } else {
+        texto = 'Obesidade grau III';
+        cssClass = 'bg-obesidade-3';
+        linhaAtiva = 'linha-o3';
+      }
+
+      var classeEl = document.getElementById('classificacao-texto');
+      classeEl.textContent = texto;
+      classeEl.className = 'classificacao ' + cssClass;
+
+      // Destaca a linha correspondente na tabela de resultados e limpa as outras
+      var linhas = ['linha-ms','linha-m','linha-n','linha-s','linha-o1','linha-o2','linha-o3'];
+      for (var i = 0; i < linhas.length; i++) {
+        var el = document.getElementById(linhas[i]);
+        if (linhas[i] === linhaAtiva) {
+          el.classList.add('ativa');
+        } else {
+          el.classList.remove('ativa');
+        }
+      }
+
+      // Torna a área de resultados (que por padrão tem display 'none') visível na tela
+      document.getElementById('resultado').style.display = 'block';
+    }
+
+    function limpar() {
+      // Reseta os inputs e esconde a área de resultados
+      document.getElementById('peso').value = '';
+      document.getElementById('altura').value = '';
+      document.getElementById('resultado').style.display = 'none';
+      document.getElementById('imc-numero').textContent = '--';
+    }
+
+    // Adiciona o atalho para calcular o IMC pressionando a tecla "Enter"
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        calcularIMC();
+      }
+    });
+  </script>
+
+</body>
+</html>
